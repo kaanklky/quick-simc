@@ -1,0 +1,9 @@
+src/node_modules/
+src/tmp/
+src/bin/
+simc/
+.git/
+.github/
+docs/
+*.md
+LICENSE
