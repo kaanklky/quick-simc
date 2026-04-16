@@ -14,7 +14,7 @@ COPY src/package.json src/package-lock.json ./
 RUN npm ci --omit=dev
 COPY src/server.js ./
 COPY src/public/ ./public/
-COPY --from=wasm-builder /wasm-out/ ./public/wasm/
+COPY --from=wasm-builder /wasm-out/ ./public/assets/wasm/
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV WEB_ACCESS_CODE=

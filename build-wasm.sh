@@ -6,7 +6,7 @@ SIMC_REPO="https://github.com/simulationcraft/simc.git"
 SIMC_BRANCH="${SIMC_BRANCH:-midnight}"
 SIMC_DIR="${SIMC_DIR:-$ROOT_DIR/simc}"
 BUILD_DIR="${BUILD_DIR:-$SIMC_DIR/build-wasm}"
-OUT_DIR="${OUT_DIR:-$ROOT_DIR/src/public/wasm}"
+OUT_DIR="${OUT_DIR:-$ROOT_DIR/src/public/assets/wasm}"
 EMSDK_DIR="${EMSDK_DIR:-$HOME/.emsdk}"
 SKIP_NPM="${SKIP_NPM:-0}"
 
