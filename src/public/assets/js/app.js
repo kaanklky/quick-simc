@@ -440,6 +440,21 @@ function cancelSimulation() {
 }
 
 els.input.addEventListener("input", saveConfig);
+let inputJustFocused = false;
+els.input.addEventListener("focus", () => {
+  inputJustFocused = true;
+});
+els.input.addEventListener("mouseup", (e) => {
+  if (inputJustFocused) {
+    els.input.select();
+    e.preventDefault();
+    inputJustFocused = false;
+  }
+});
+els.input.addEventListener("blur", () => {
+  inputJustFocused = false;
+});
+
 els.btnSimulate.addEventListener("click", startSimulation);
 els.btnClear.addEventListener("click", () => {
   els.input.value = "";

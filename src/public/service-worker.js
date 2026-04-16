@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v4";
+const CACHE_VERSION = "v5";
 const SHELL_CACHE = `quick-simc-shell-${CACHE_VERSION}`;
 const WASM_CACHE = `quick-simc-wasm-${CACHE_VERSION}`;
 
