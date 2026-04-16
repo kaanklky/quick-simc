@@ -201,6 +201,7 @@ const els = {
   progressSpeed: $("#progress-speed"),
   progressEta: $("#progress-eta"),
   resultSection: $("#result-section"),
+  resultTitle: $("#result-title"),
   resultName: $("#result-name"),
   resultRaceClass: $("#result-race-class"),
   resultSpec: $("#result-spec"),
@@ -219,10 +220,11 @@ const els = {
   btnToggleLog: $("#btn-toggle-log"),
 };
 
-let ws = null;
+let worker = null;
 let logMessages = [];
 let maxTotalIter = 0;
 let simThreads = 1;
+let simStartTime = 0;
 
 function loadFightStyles() {
   fetch("/api/fight-styles")
@@ -270,37 +272,47 @@ function resetProgress() {
   els.btnToggleLog.textContent = "Show";
 }
 
-function connectWs() {
-  if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) {
-    return;
+function spawnWorker() {
+  if (worker) {
+    try { worker.terminate(); } catch {}
+    worker = null;
   }
-
   els.btnSimulate.disabled = true;
-  const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-  ws = new WebSocket(`${protocol}//${location.host}/ws`);
-
-  ws.onopen = () => {
-    els.btnSimulate.disabled = false;
+  els.btnSimulate.textContent = "Loading simc...";
+  worker = new Worker("/assets/js/sim-worker.js");
+  worker.onmessage = (event) => handleMessage(event.data);
+  worker.onerror = (err) => {
+    handleMessage({
+      type: "error",
+      message: err.message || "Worker error",
+    });
   };
+}
 
-  ws.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
-    handleMessage(msg);
-  };
-
-  ws.onclose = () => {
-    els.btnSimulate.disabled = true;
-    setTimeout(connectWs, 2000);
-  };
-
-  ws.onerror = () => {};
+function terminateAndRespawn() {
+  if (worker) {
+    try { worker.terminate(); } catch {}
+    worker = null;
+  }
+  spawnWorker();
 }
 
 function handleMessage(msg) {
   switch (msg.type) {
+    case "loading":
+      els.btnSimulate.disabled = true;
+      els.btnSimulate.textContent = "Loading simc...";
+      break;
+
+    case "ready":
+      els.btnSimulate.disabled = false;
+      els.btnSimulate.textContent = "Simulate";
+      break;
+
     case "started":
       resetProgress();
       simThreads = msg.threads || 1;
+      simStartTime = Date.now();
       els.progressSection.classList.remove("hidden");
       els.resultSection.classList.add("hidden");
       els.errorSection.classList.add("hidden");
@@ -320,19 +332,19 @@ function handleMessage(msg) {
 
     case "result":
       showResult(msg.data);
-      els.btnSimulate.disabled = false;
+      terminateAndRespawn();
       break;
 
     case "error":
       els.progressSection.classList.add("hidden");
       els.errorSection.classList.remove("hidden");
       els.errorMessage.textContent = msg.message;
-      els.btnSimulate.disabled = false;
+      terminateAndRespawn();
       break;
 
     case "cancelled":
       els.progressSection.classList.add("hidden");
-      els.btnSimulate.disabled = false;
+      terminateAndRespawn();
       break;
   }
 }
@@ -368,6 +380,13 @@ function updateProgress(data) {
 function showResult(data) {
   els.progressSection.classList.add("hidden");
   els.resultSection.classList.remove("hidden");
+
+  if (simStartTime > 0) {
+    const elapsedSec = (Date.now() - simStartTime) / 1000;
+    els.resultTitle.textContent = `Results - took ${formatEta(elapsedSec)}`;
+  } else {
+    els.resultTitle.textContent = "Results";
+  }
 
   const config = parseConfig(els.input.value);
 
@@ -408,17 +427,16 @@ function startSimulation() {
   els.resultSection.classList.add("hidden");
   els.errorSection.classList.add("hidden");
 
-  ws.send(JSON.stringify({
+  if (!worker) spawnWorker();
+  worker.postMessage({
     type: "simulate",
     config,
     fightStyle: els.fightStyle.value,
-  }));
+  });
 }
 
 function cancelSimulation() {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: "cancel" }));
-  }
+  handleMessage({ type: "cancelled" });
 }
 
 els.input.addEventListener("input", saveConfig);
@@ -434,6 +452,18 @@ els.btnToggleLog.addEventListener("click", () => {
   els.btnToggleLog.textContent = els.logOutput.classList.contains("hidden") ? "Show" : "Hide";
 });
 
+if (!self.crossOriginIsolated) {
+  console.warn(
+    "crossOriginIsolated is false. Simulation will not start because SharedArrayBuffer is unavailable. Check that the server sends Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy headers."
+  );
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js").catch((err) => {
+    console.warn("Service worker registration failed:", err);
+  });
+}
+
 loadConfig();
 loadFightStyles();
-connectWs();
+spawnWorker();

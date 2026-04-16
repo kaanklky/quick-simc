@@ -1,6 +1,5 @@
 src/node_modules/
-src/tmp/
-src/bin/
+src/public/assets/wasm/
 simc/
 .git/
 .github/

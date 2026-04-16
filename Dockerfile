@@ -1,27 +1,20 @@
-FROM node:22-bookworm-slim AS base
-
-FROM base AS simc-builder
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    cmake g++ make git ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+FROM emscripten/emsdk:latest AS wasm-builder
 ARG SIMC_BRANCH=midnight
-RUN git clone --depth 1 --branch ${SIMC_BRANCH} https://github.com/simulationcraft/simc.git /simc
-WORKDIR /simc/build
-RUN cmake -DBUILD_GUI=OFF -DSC_NO_NETWORKING=ON .. \
-    && make -j$(nproc) \
-    && strip simc
+ENV SIMC_BRANCH=${SIMC_BRANCH}
+ENV SIMC_DIR=/simc
+ENV BUILD_DIR=/simc/build-wasm
+ENV OUT_DIR=/wasm-out
+ENV SKIP_NPM=1
+COPY build-wasm.sh /build-wasm.sh
+RUN chmod +x /build-wasm.sh && /build-wasm.sh
 
-FROM base
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libstdc++6 \
-    && rm -rf /var/lib/apt/lists/*
+FROM node:22-bookworm-slim
 WORKDIR /app
 COPY src/package.json src/package-lock.json ./
 RUN npm ci --omit=dev
 COPY src/server.js ./
 COPY src/public/ ./public/
-COPY --from=simc-builder /simc/build/simc ./bin/simc
-RUN mkdir -p tmp && chown node:node tmp
+COPY --from=wasm-builder /wasm-out/ ./public/assets/wasm/
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV WEB_ACCESS_CODE=
