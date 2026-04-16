@@ -66,6 +66,18 @@ if [ -n "${SIMC_WORKER_JS:-}" ]; then
   cp "$SIMC_WORKER_JS" "$OUT_DIR/simc.worker.js"
 fi
 
+echo "Compressing simc.wasm..."
+if command -v brotli >/dev/null 2>&1; then
+  brotli -k -f -q 11 "$OUT_DIR/simc.wasm"
+else
+  echo "Warning: brotli not installed, skipping .wasm.br" >&2
+fi
+if command -v gzip >/dev/null 2>&1; then
+  gzip -k -f -9 "$OUT_DIR/simc.wasm"
+else
+  echo "Warning: gzip not installed, skipping .wasm.gz" >&2
+fi
+
 if [ "$SKIP_NPM" != "1" ]; then
   echo "Installing Node dependencies..."
   cd "$ROOT_DIR/src"

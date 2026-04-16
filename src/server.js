@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const crypto = require("crypto");
 
 const PORT = process.env.PORT || 3000;
@@ -115,8 +116,38 @@ app.use((req, res, next) => {
   res.redirect("/login");
 });
 
+const PUBLIC_DIR = path.join(__dirname, "public");
+
+app.use((req, res, next) => {
+  if (req.method !== "GET" && req.method !== "HEAD") return next();
+  if (!req.path.endsWith(".wasm")) return next();
+
+  const accept = req.headers["accept-encoding"] || "";
+  const filePath = path.join(PUBLIC_DIR, req.path);
+
+  let variantPath = null;
+  let encoding = null;
+  if (/\bbr\b/.test(accept) && fs.existsSync(filePath + ".br")) {
+    variantPath = filePath + ".br";
+    encoding = "br";
+  } else if (/\bgzip\b/.test(accept) && fs.existsSync(filePath + ".gz")) {
+    variantPath = filePath + ".gz";
+    encoding = "gzip";
+  }
+
+  if (!variantPath) return next();
+
+  res.setHeader("Content-Type", "application/wasm");
+  res.setHeader("Content-Encoding", encoding);
+  res.setHeader("Vary", "Accept-Encoding");
+  res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+  res.sendFile(variantPath, (err) => {
+    if (err) next(err);
+  });
+});
+
 app.use(
-  express.static(path.join(__dirname, "public"), {
+  express.static(PUBLIC_DIR, {
     setHeaders: (res) => {
       res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
     },

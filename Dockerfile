@@ -5,6 +5,11 @@ ENV SIMC_DIR=/simc
 ENV BUILD_DIR=/simc/build-wasm
 ENV OUT_DIR=/wasm-out
 ENV SKIP_NPM=1
+RUN (sed -i 's/ multiverse//g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null \
+     || sed -i 's/ multiverse//g' /etc/apt/sources.list 2>/dev/null || true) \
+    && apt-get update -o Acquire::Retries=5 \
+    && apt-get install -y --no-install-recommends brotli gzip \
+    && rm -rf /var/lib/apt/lists/*
 COPY build-wasm.sh /build-wasm.sh
 RUN chmod +x /build-wasm.sh && /build-wasm.sh
 
