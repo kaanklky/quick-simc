@@ -7,7 +7,7 @@
 > No queue, no CLI, no desktop app. Just a browser tab. Paste, click, done.
 
 > **How does it work?**
-> SimulationCraft is compiled to WebAssembly with Emscripten (pthreads + SharedArrayBuffer). The whole simulation runs client-side in a Web Worker using all available cores. The Node server does nothing but serve static files, issue cross-origin-isolation headers (required for SharedArrayBuffer), and optionally gate access behind a login. A Service Worker caches the WASM bundle so repeat visits are instant. Dangerous config directives (`output=`, `html=`, `json=`, `input=`, `save_*`) are stripped before the config reaches simc.
+> SimulationCraft is compiled to WebAssembly with Emscripten (pthreads + SharedArrayBuffer). The whole simulation runs client-side in a Web Worker using all available cores. The Node server does nothing but serve static files, issue cross-origin-isolation headers (required for SharedArrayBuffer), and optionally gate access behind a login. A Service Worker caches the WASM bundle so repeat visits are instant. The WASM file is pre-compressed at build time (brotli + gzip) and served with the matching `Content-Encoding`, so it stays under Cloudflare's 100 MB proxy limit and downloads fast even on slow links. Dangerous config directives (`output=`, `html=`, `json=`, `input=`, `save_*`) are stripped before the config reaches simc.
 
 ## Running locally
 
@@ -24,7 +24,7 @@ cd src && npm start
 SIMC_BRANCH=thewarwithin ./build-wasm.sh
 ```
 
-The first WASM build takes 15-40 minutes. The resulting `simc.wasm` is 30-60 MB (compressed) and will be cached in the browser on first visit via Service Worker.
+The first WASM build takes 15-40 minutes. The resulting `simc.wasm` is ~100 MB uncompressed; `build-wasm.sh` also emits `simc.wasm.br` (~25 MB) and `simc.wasm.gz` (~35 MB) which the server picks based on `Accept-Encoding`. Install `brotli` locally (Debian/Ubuntu: `apt install brotli`) before running the build if you want the smaller variant. Everything is cached in the browser on first visit via Service Worker.
 
 ## Docker
 
