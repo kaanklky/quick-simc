@@ -1,4 +1,4 @@
-name: simc watch (daily)
+name: Watch simc upstream
 
 on:
   schedule:
@@ -9,7 +9,7 @@ env:
   SIMC_BRANCH: ${{ vars.SIMC_BRANCH || 'midnight' }}
 
 jobs:
-  check:
+  watch:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -37,7 +37,7 @@ jobs:
           LAST_SHA=$(printf '%s' "$BODY" | grep -oE 'simc-sha: [a-f0-9]+' | awk '{print $2}' || true)
           echo "sha=$LAST_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Bump patch and release
+      - name: Tag patch bump and dispatch build
         if: steps.last.outputs.sha != '' && steps.last.outputs.sha != steps.simc.outputs.sha
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,9 +50,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a "$NEW" -m "Auto release: simc ${{ env.SIMC_BRANCH }}@${{ steps.simc.outputs.sha }}"
           git push origin "$NEW"
-          NOTES=$(printf 'Automated release triggered by simc update.\n\nsimc-sha: %s\n' "${{ steps.simc.outputs.sha }}")
-          gh release create "$NEW" --title "$NEW" --notes "$NOTES"
-          gh workflow run docker.yml --ref "$NEW"
+          gh workflow run release.yml --ref "$NEW"
 
       - name: Warn on missing baseline
         if: steps.last.outputs.sha == ''
