@@ -18,11 +18,13 @@ Requires cmake, g++, make, git, python3 (emsdk deps) and Node 20+:
 cd src && npm start
 ```
 
-`build-wasm.sh` installs emsdk into `~/.emsdk` if missing, clones simc, builds it to WebAssembly with `emcmake`, copies the artifacts into `src/public/assets/wasm/`, and runs `npm install`. Set `SIMC_BRANCH` to build a different branch:
+`build-wasm.sh` installs emsdk into `~/.emsdk` if missing, clones simc, builds it to WebAssembly with `emcmake`, copies the artifacts into `src/public/assets/wasm/`, and runs `npm install`. Set `SIMC_BRANCH` and `WOW_PATCH_NAME` to build a different expansion:
 
 ```bash
-SIMC_BRANCH=thewarwithin ./build-wasm.sh
+SIMC_BRANCH=thewarwithin WOW_PATCH_NAME="The War Within" ./build-wasm.sh
 ```
+
+After the WASM build, `build-wasm.sh` also rewrites the subtitle in `src/public/index.html` (using the simc version from `engine/config.hpp` and the WoW patch version from `engine/dbc/generated/client_data_version.inc`) and the `CACHE_VERSION` constant in `src/public/service-worker.js` (derived from `git describe --tags --always`, override with `APP_VERSION=...`). These two files are mutated **in place** — do not commit their injected values back. Use `NO_INJECT=1 ./build-wasm.sh` to skip the rewrite step.
 
 The first WASM build takes 15-40 minutes. The resulting `simc.wasm` is ~100 MB uncompressed; `build-wasm.sh` also emits `simc.wasm.br` (~7 MB) and `simc.wasm.gz` (~18 MB) which the server picks based on `Accept-Encoding`. Install `brotli` locally (Debian/Ubuntu: `apt install brotli`) before running the build if you want the smaller variant. Everything is cached in the browser on first visit via Service Worker.
 
@@ -49,6 +51,9 @@ Docker build args:
 | Arg | Default | Description |
 |---|---|---|
 | `SIMC_BRANCH` | `midnight` | SimC git branch to clone and build |
+| `SIMC_REF` | *(empty)* | Pin to a specific simc commit SHA. Without this, Docker's layer cache misses new upstream commits; CI sets this automatically via `git ls-remote`. |
+| `APP_VERSION` | `dev` | Injected into the service worker as `CACHE_VERSION`. CI passes the git tag (or `sha-<short>`) so each release cuts its own cache key. |
+| `WOW_PATCH_NAME` | `Midnight` | Display name for the WoW expansion (used in the UI subtitle). Set together with `SIMC_BRANCH`. |
 
 ### Examples
 
