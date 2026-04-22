@@ -11,8 +11,7 @@ ENV SIMC_BRANCH=${SIMC_BRANCH} \
     SIMC_DIR=/simc \
     BUILD_DIR=/simc/build-wasm \
     PUBLIC_DIR=/prepared/public \
-    OUT_DIR=/prepared/public/assets/wasm \
-    SKIP_NPM=1
+    OUT_DIR=/prepared/public/assets/wasm
 RUN (sed -i 's/ multiverse//g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null \
      || sed -i 's/ multiverse//g' /etc/apt/sources.list 2>/dev/null || true) \
     && apt-get update -o Acquire::Retries=5 \
@@ -22,15 +21,8 @@ COPY src/public/ /prepared/public/
 COPY build-wasm.sh /build-wasm.sh
 RUN chmod +x /build-wasm.sh && /build-wasm.sh
 
-FROM node:22-bookworm-slim
-WORKDIR /app
-COPY src/package.json src/package-lock.json ./
-RUN npm ci --omit=dev
-COPY src/server.js ./
-COPY --from=wasm-builder /prepared/public/ ./public/
-ENV NODE_ENV=production
+FROM nginx:alpine
+COPY --from=wasm-builder /prepared/public/ /usr/share/nginx/html/
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 ENV PORT=3000
-ENV WEB_ACCESS_CODE=
-EXPOSE ${PORT}
-USER node
-CMD ["node", "server.js"]
+EXPOSE 3000

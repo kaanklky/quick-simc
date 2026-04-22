@@ -74,6 +74,17 @@ main_hand=,id=258412,bonus_id=13440/6652/12701/12798
 
 const STORAGE_KEY = "quick-simc-config";
 
+const FIGHT_STYLES = [
+  "Patchwerk",
+  "CastingPatchwerk",
+  "HecticAddCleave",
+  "DungeonSlice",
+  "DungeonRoute",
+  "CleaveAdd",
+  "LightMovement",
+  "HeavyMovement",
+];
+
 const KNOWN_CLASSES = [
   "warrior", "paladin", "hunter", "rogue", "priest",
   "deathknight", "shaman", "mage", "warlock", "monk",
@@ -227,17 +238,12 @@ let simThreads = 1;
 let simStartTime = 0;
 
 function loadFightStyles() {
-  fetch("/api/fight-styles")
-    .then((res) => res.json())
-    .then((styles) => {
-      for (const style of styles) {
-        const opt = document.createElement("option");
-        opt.value = style;
-        opt.textContent = style;
-        els.fightStyle.appendChild(opt);
-      }
-    })
-    .catch(() => {});
+  for (const style of FIGHT_STYLES) {
+    const opt = document.createElement("option");
+    opt.value = style;
+    opt.textContent = style;
+    els.fightStyle.appendChild(opt);
+  }
 }
 
 function saveConfig() {

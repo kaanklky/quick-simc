@@ -10,7 +10,6 @@ BUILD_DIR="${BUILD_DIR:-$SIMC_DIR/build-wasm}"
 PUBLIC_DIR="${PUBLIC_DIR:-$ROOT_DIR/src/public}"
 OUT_DIR="${OUT_DIR:-$PUBLIC_DIR/assets/wasm}"
 EMSDK_DIR="${EMSDK_DIR:-$HOME/.emsdk}"
-SKIP_NPM="${SKIP_NPM:-0}"
 NO_INJECT="${NO_INJECT:-0}"
 
 if ! command -v emcc >/dev/null 2>&1; then
@@ -115,11 +114,4 @@ if [ "$NO_INJECT" != "1" ]; then
   fi
 fi
 
-if [ "$SKIP_NPM" != "1" ]; then
-  echo "Installing Node dependencies..."
-  cd "$ROOT_DIR/src"
-  npm install
-  echo "Done. Run: cd src && npm start"
-else
-  echo "Done. Artifacts in $OUT_DIR."
-fi
+echo "Done. Artifacts in $OUT_DIR."
