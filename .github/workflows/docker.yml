@@ -6,6 +6,7 @@ on:
     tags: ["v*"]
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -45,6 +46,12 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha
 
+      - name: Resolve simc commit SHA
+        id: simc
+        run: |
+          SHA=$(git ls-remote https://github.com/simulationcraft/simc.git "${{ env.SIMC_BRANCH }}" | awk '{print $1}')
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -52,6 +59,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: SIMC_BRANCH=${{ env.SIMC_BRANCH }}
+          build-args: |
+            SIMC_BRANCH=${{ env.SIMC_BRANCH }}
+            SIMC_REF=${{ steps.simc.outputs.sha }}
+            APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || format('sha-{0}', github.sha) }}
+            WOW_PATCH_NAME=${{ vars.WOW_PATCH_NAME || 'Midnight' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
