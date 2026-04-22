@@ -23,6 +23,6 @@ RUN chmod +x /build-wasm.sh && /build-wasm.sh
 
 FROM nginx:alpine
 COPY --from=wasm-builder /prepared/public/ /usr/share/nginx/html/
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY src/conf/nginx.conf /etc/nginx/templates/default.conf.template
 ENV PORT=3000
 EXPOSE 3000
