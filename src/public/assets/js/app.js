@@ -1,6 +1,6 @@
-const EXAMPLE_PROFILE = `# Sozinn - Marksmanship - 2026-04-15 10:21 - EU/Twisting Nether
-# SimC Addon 12.0.1-04
-# WoW 12.0.1.66838, TOC 120001
+const EXAMPLE_PROFILE = `# Sozinn - Marksmanship - 2026-04-23 00:37 - EU/Twisting Nether
+# SimC Addon 12.0.5-01
+# WoW 12.0.5.67088, TOC 120005
 # Requires SimulationCraft 1000-01 or newer
 
 hunter="Sozinn"
@@ -13,41 +13,45 @@ professions=mining=57/jewelcrafting=1
 spec=marksmanship
 # loot_spec=marksmanship
 
-talents=C4PAo4YcvOcqUdzB9zV+NhSAcwCMwMGNWGQmBbAAAAAAAAAzYGzwMmZGzwyYaGjxMbbbmZmhZGWmZWGjZZYmBAAMmZmBgZGbgBYDD
+talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAmgZYLwsAAAAAAAAAMjZMDzYmZMDGTzYmZstxYmlZmZmZmlxMLDGAAgxMzMzMzAwGMAbMDA
 
 # Saved Loadout: iv-Single-Sentinel-12.0.1-02
-# talents=C4PAo4YcvOcqUdzB9zV+NhSAcwCMwMGGLDgZwGAAAAAAAAwMmxMMjZmxMYMmxYmZ222MzMDzMYmZZMmlBzAAAGzMzAwMjtNYA2GG
+# talents=C4PApei1JmYNvFfEFaN5bWuGKwCMwMGGLDgZwGAAAAAAAAwMmxMMjZmxMYMmxwYzmxgZGmZWYsMYAAAGzMzAwMstBDwGA
+# Saved Loadout: iv-Single-DR-12.0.5-01
+# talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAGwMsBMLAAAAAAAAAzYGzwMmZGzgxYGzMjtNGzsMzMzMzsMmZZwAAAMmZmZmZGA2gBYjZA
 # Saved Loadout: Razzoer-AoE-Sentinel-12.0.1-01
-# talents=C4PAo4YcvOcqUdzB9zV+NhSAcwCMwMGGLDgZwGAAAAAAAAwMmxMMjZmxMsMGzYMmZbbzMzMMzwyMzyYMLDzMAAgxMzMAMzYDMAbYA
+# talents=C4PApei1JmYNvFfEFaN5bWuGKwCMwMGGLDgZwGAAAAAAAAwMmxMMjZmxMsMGzYYsZzYwMDzMLMWGmBAAYMzMDAzwGYA2AA
 # Saved Loadout: iv-AoE-Sentinel-12.0.1-02
-# talents=C4PAo4YcvOcqUdzB9zV+NhSAcwCMwMGGLDgZwGAAAAAAAAwMmZmx2MmZGzwyYMjxYmttNzMzwMDLzMLjxsMMzAAAYMGAmZswwAshB
+# talents=C4PApei1JmYNvFfEFaN5bWuGKwCMwMGGLDgZwGAAAAAAAAwMmZmx2MmZGzwyYMjZMz22mZmhZGmZWGjlhZGAAAjxAwMjFGGgNGA
+# Saved Loadout: iv-AoE-DR-12.0.5-01
+# talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAGwMsBMLAAAAAAAAAzYmZGbGzMjZYZMmxgZZjZmZZmZmZmZhZWGmZAAAmxYmZmBMAGgNmB
 
 # Primal Sentry's Maw (263)
 head=,id=249988,bonus_id=13338/13439/6652/12667/13575/12790
 # Ribbon of Coiled Malice (266)
 neck=,id=249337,bonus_id=42/13668/13334/12795
-# Primal Sentry's Trophies (272)
-shoulder=,id=249986,bonus_id=13340/12801/13440/6652/13574
+# Primal Sentry's Trophies (279)
+shoulder=,id=249986,bonus_id=13340/13440/6652/13574/12803
 # Voidbreaker's Cape (259)
 back=,id=257172,bonus_id=6652/13577/12789
-# Primal Sentry's Scaleplate (272)
-chest=,id=249991,bonus_id=6652/13336/13575/12797
+# Primal Sentry's Scaleplate (276)
+chest=,id=249991,bonus_id=6652/13336/13575/12798
 # Tabard of Summer Flames (1)
 tabard=,id=35280
 # Corewarden Cuffs (269)
 wrist=,id=251209,bonus_id=13440/43/12667/13577/12699/12796
-# Primal Sentry's Talonguards (272)
-hands=,id=249989,bonus_id=6652/13440/13337/13574/12797
+# Primal Sentry's Talonguards (276)
+hands=,id=249989,bonus_id=6652/13440/13337/13574/12798
 # Elder Mosscinch (259)
 waist=,id=249651,bonus_id=6652/13534/13577/12789
-# Primal Sentry's Legguards (276)
-legs=,id=249987,bonus_id=13339/13440/6652/13575/12798
-# Whipcoil Sabatons (259)
-feet=,id=251084,bonus_id=13439/6652/13577/12699/12789
-# Occlusion of Void (259)
-finger1=,id=251217,bonus_id=13440/6652/13668/12699/12789
-# Bifurcation Band (266)
-finger2=,id=251115,bonus_id=13440/6652/13668/12699/12795
+# Primal Sentry's Legguards (282)
+legs=,id=249987,bonus_id=6652/13440/13339/13575/12804
+# Rigid Scale Boots (266)
+feet=,id=258582,bonus_id=12795/13440/6652/13577/12699
+# Omission of Light (266)
+finger1=,id=251093,bonus_id=12795/13440/6652/13668/12699
+# Occlusion of Void (263)
+finger2=,id=251217,bonus_id=13440/6652/13668/12699/12790
 # Glorious Crusader's Keepsake (266)
 trinket1=,id=251792,bonus_id=6652/12795
 # Void-Reaper's Libram (259)
@@ -57,20 +61,26 @@ main_hand=,id=258412,bonus_id=13440/6652/12701/12798
 
 ### Gear from Bags
 #
-# Scaled Commencement Spaulders (263)
-# shoulder=,id=193704,bonus_id=13440/43/13577/12699/12790
+# Primal Sentry's Legguards (276)
+# legs=,id=249987,bonus_id=13339/13440/6652/13575/12798
+#
+# Hurricane's Heart (266)
+# main_hand=,id=251095,bonus_id=12795/13440/6652/12701
+#
+# Sunstrike Rifle (259)
+# main_hand=,id=249279,bonus_id=6652/13334/12793
 
 ### Additional Character Info
 #
 # catalyst_currencies=3269:8/3378:4/2813:8/3116:8
 #
-# upgrade_currencies=c:3347:75/c:3383:75/c:3341:56/c:3345:8/i:228338:1/i:230906:7/i:228339:1/i:224072:1/i:231756:7/i:232875:6/i:229390:9/i:230936:1/i:231769:1/i:211296:11
+# upgrade_currencies=c:3347:77/c:3383:95/c:3341:56/c:3343:10/c:3345:16/i:228338:1/i:230906:7/i:228339:1/i:224072:1/i:231756:7/i:232875:7/i:229390:9/i:230936:1/i:231769:1/i:211296:11
 #
-# slot_high_watermarks=0:263:263/1:266:266/2:272:272/3:272:272/4:259:259/5:276:276/6:259:259/7:269:269/8:272:272/9:259:259/10:259:259/11:259:259/12:276:276/13:0:0/14:0:0/15:0:0/16:0:0
+# slot_high_watermarks=0:263:263/1:266:266/2:279:279/3:276:276/4:259:259/5:282:282/6:266:266/7:269:269/8:276:276/9:266:266/10:259:259/11:259:259/12:276:276/13:0:0/14:0:0/15:0:0/16:0:0
 #
 # upgrade_achievements=40107/40942/40943/40944/41886/41887/41888/41892/42767/61809
 
-# Checksum: 5839337b`;
+# Checksum: ae5bb903`;
 
 const STORAGE_KEY = "quick-simc-config";
 

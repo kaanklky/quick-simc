@@ -96,8 +96,11 @@ function extractResult(json) {
   };
 }
 
+const simcErrors = [];
+
 function onStdout(line) {
   if (!line) return;
+  if (/^Error:/i.test(line)) simcErrors.push(line);
   const parts = line.split("\t");
   const parsed = parseProgress(parts);
   if (parsed) {
@@ -105,6 +108,13 @@ function onStdout(line) {
   } else {
     self.postMessage({ type: "log", message: line });
   }
+}
+
+function formatErr(err) {
+  if (!err) return "unknown error";
+  if (err.message) return err.message;
+  if (err.code && err.errno !== undefined) return `${err.code} (errno ${err.errno})`;
+  return String(err);
 }
 
 self.postMessage({ type: "loading" });
@@ -162,11 +172,13 @@ self.onmessage = async (e) => {
     args.push(`fight_style=${msg.fightStyle}`);
   }
 
+  simcErrors.length = 0;
+
   try {
     m.callMain(args);
   } catch (err) {
-    const reason = err && err.message ? err.message : String(err);
-    self.postMessage({ type: "error", message: `simc exited: ${reason}` });
+    const prefix = simcErrors.length ? simcErrors.join("\n") : `simc exited: ${formatErr(err)}`;
+    self.postMessage({ type: "error", message: prefix });
     return;
   }
 
@@ -175,10 +187,9 @@ self.onmessage = async (e) => {
     const data = extractResult(JSON.parse(jsonText));
     self.postMessage({ type: "result", data });
   } catch (err) {
-    const reason = err && err.message ? err.message : String(err);
-    self.postMessage({
-      type: "error",
-      message: `Failed to parse results: ${reason}`,
-    });
+    const detail = simcErrors.length
+      ? simcErrors.join("\n")
+      : `Failed to parse results: ${formatErr(err)}`;
+    self.postMessage({ type: "error", message: detail });
   }
 };
