@@ -1,0 +1,60 @@
+name: simc watch (daily)
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+env:
+  SIMC_BRANCH: ${{ vars.SIMC_BRANCH || 'midnight' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Resolve upstream simc SHA
+        id: simc
+        run: |
+          SHA=$(git ls-remote https://github.com/simulationcraft/simc.git "${{ env.SIMC_BRANCH }}" | awk '{print $1}')
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Read last released simc SHA
+        id: last
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LAST_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          echo "tag=$LAST_TAG" >> "$GITHUB_OUTPUT"
+          BODY=$(gh release view "$LAST_TAG" --json body -q .body 2>/dev/null || echo "")
+          LAST_SHA=$(printf '%s' "$BODY" | grep -oE 'simc-sha: [a-f0-9]+' | awk '{print $2}' || true)
+          echo "sha=$LAST_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Bump patch and release
+        if: steps.last.outputs.sha != '' && steps.last.outputs.sha != steps.simc.outputs.sha
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CUR="${{ steps.last.outputs.tag }}"
+          STRIPPED="${CUR#v}"
+          IFS='.' read -r MAJ MIN PATCH <<< "$STRIPPED"
+          NEW="v${MAJ}.${MIN}.$((PATCH+1))"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$NEW" -m "Auto release: simc ${{ env.SIMC_BRANCH }}@${{ steps.simc.outputs.sha }}"
+          git push origin "$NEW"
+          NOTES=$(printf 'Automated release triggered by simc update.\n\nsimc-sha: %s\n' "${{ steps.simc.outputs.sha }}")
+          gh release create "$NEW" --title "$NEW" --notes "$NOTES"
+          gh workflow run docker.yml --ref "$NEW"
+
+      - name: Warn on missing baseline
+        if: steps.last.outputs.sha == ''
+        run: |
+          echo "::warning::Latest release ${{ steps.last.outputs.tag }} has no 'simc-sha:' marker. Retrofit the release body manually before the watcher can bump."
