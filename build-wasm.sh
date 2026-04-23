@@ -11,6 +11,9 @@ PUBLIC_DIR="${PUBLIC_DIR:-$ROOT_DIR/src/public}"
 OUT_DIR="${OUT_DIR:-$PUBLIC_DIR/assets/wasm}"
 EMSDK_DIR="${EMSDK_DIR:-$HOME/.emsdk}"
 NO_INJECT="${NO_INJECT:-0}"
+INJECT_ONLY="${INJECT_ONLY:-0}"
+
+if [ "$INJECT_ONLY" != "1" ]; then
 
 if ! command -v emcc >/dev/null 2>&1; then
   if [ ! -d "$EMSDK_DIR" ]; then
@@ -93,6 +96,8 @@ if command -v gzip >/dev/null 2>&1; then
 else
   echo "Warning: gzip not installed, skipping .wasm.gz" >&2
 fi
+
+fi  # INJECT_ONLY guard
 
 if [ "$NO_INJECT" != "1" ]; then
   SIMC_MAJOR="$(grep -oE '#define[[:space:]]+SC_MAJOR_VERSION[[:space:]]+"[^"]+"' "$SIMC_DIR/engine/config.hpp" | grep -oE '"[^"]+"' | tr -d '"')"

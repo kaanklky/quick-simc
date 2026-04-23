@@ -17,9 +17,10 @@ RUN (sed -i 's/ multiverse//g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/nul
     && apt-get update -o Acquire::Retries=5 \
     && apt-get install -y --no-install-recommends brotli gzip \
     && rm -rf /var/lib/apt/lists/*
-COPY src/public/ /prepared/public/
 COPY build-wasm.sh /build-wasm.sh
-RUN chmod +x /build-wasm.sh && /build-wasm.sh
+RUN chmod +x /build-wasm.sh && NO_INJECT=1 /build-wasm.sh
+COPY src/public/ /prepared/public/
+RUN INJECT_ONLY=1 /build-wasm.sh
 
 FROM nginx:alpine
 COPY --from=wasm-builder /prepared/public/ /usr/share/nginx/html/
