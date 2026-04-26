@@ -68,8 +68,8 @@ jobs:
             SIMC_REF=${{ steps.simc.outputs.sha }}
             APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || format('sha-{0}', github.sha) }}
             WOW_PATCH_NAME=${{ vars.WOW_PATCH_NAME || 'Midnight' }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: ${{ github.event_name != 'pull_request' && format('type=registry,ref={0}/{1}:buildcache,mode=max', env.REGISTRY, env.IMAGE_NAME) || '' }}
 
       - name: Create GitHub release
         if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
