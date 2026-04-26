@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      actions: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -21,38 +20,29 @@ jobs:
           fetch-tags: true
 
       - name: Resolve upstream simc SHA
-        id: simc
+        id: upstream
         run: |
           SHA=$(git ls-remote https://github.com/simulationcraft/simc.git "${{ env.SIMC_BRANCH }}" | awk '{print $1}')
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Read last released simc SHA
-        id: last
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read pinned simc SHA from latest release tag
+        id: pinned
         run: |
           LAST_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
           echo "tag=$LAST_TAG" >> "$GITHUB_OUTPUT"
-          BODY=$(gh release view "$LAST_TAG" --json body -q .body 2>/dev/null || echo "")
-          LAST_SHA=$(printf '%s' "$BODY" | grep -oE 'simc-sha: [a-f0-9]+' | awk '{print $2}' || true)
-          echo "sha=$LAST_SHA" >> "$GITHUB_OUTPUT"
+          MSG=$(git for-each-ref --format='%(contents)' "refs/tags/$LAST_TAG" 2>/dev/null || echo "")
+          SHA=$(printf '%s' "$MSG" | grep -oE 'simc-sha=[a-f0-9]+' | head -1 | cut -d= -f2 || true)
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Tag patch bump and dispatch build
-        if: steps.last.outputs.sha != '' && steps.last.outputs.sha != steps.simc.outputs.sha
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tag patch bump
+        if: steps.upstream.outputs.sha != steps.pinned.outputs.sha
         run: |
-          CUR="${{ steps.last.outputs.tag }}"
-          STRIPPED="${CUR#v}"
+          STRIPPED="${{ steps.pinned.outputs.tag }}"
+          STRIPPED="${STRIPPED#v}"
           IFS='.' read -r MAJ MIN PATCH <<< "$STRIPPED"
           NEW="v${MAJ}.${MIN}.$((PATCH+1))"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "$NEW" -m "Auto release: simc ${{ env.SIMC_BRANCH }}@${{ steps.simc.outputs.sha }}"
+          git tag -a "$NEW" -m "Auto release: simc ${{ env.SIMC_BRANCH }}@${{ steps.upstream.outputs.sha }}
+simc-sha=${{ steps.upstream.outputs.sha }}"
           git push origin "$NEW"
-          gh workflow run release.yml --ref "$NEW"
-
-      - name: Warn on missing baseline
-        if: steps.last.outputs.sha == ''
-        run: |
-          echo "::warning::Latest release ${{ steps.last.outputs.tag }} has no 'simc-sha:' marker. Retrofit the release body manually before the watcher can bump."

@@ -13,10 +13,6 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   SIMC_BRANCH: ${{ vars.SIMC_BRANCH || 'midnight' }}
 
-concurrency:
-  group: release-${{ github.sha }}
-  cancel-in-progress: false
-
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -53,7 +49,14 @@ jobs:
       - name: Resolve simc commit SHA
         id: simc
         run: |
-          SHA=$(git ls-remote https://github.com/simulationcraft/simc.git "${{ env.SIMC_BRANCH }}" | awk '{print $1}')
+          SHA=""
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            MSG=$(git for-each-ref --format='%(contents)' "refs/tags/${{ github.ref_name }}")
+            SHA=$(printf '%s' "$MSG" | grep -oE 'simc-sha=[a-f0-9]+' | head -1 | cut -d= -f2)
+          fi
+          if [ -z "$SHA" ]; then
+            SHA=$(git ls-remote https://github.com/simulationcraft/simc.git "${{ env.SIMC_BRANCH }}" | awk '{print $1}')
+          fi
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
 
       - name: Build and push image
@@ -68,8 +71,8 @@ jobs:
             SIMC_REF=${{ steps.simc.outputs.sha }}
             APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || format('sha-{0}', github.sha) }}
             WOW_PATCH_NAME=${{ vars.WOW_PATCH_NAME || 'Midnight' }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: ${{ github.event_name != 'pull_request' && format('type=registry,ref={0}/{1}:buildcache,mode=max', env.REGISTRY, env.IMAGE_NAME) || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Create GitHub release
         if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
