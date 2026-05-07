@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -34,8 +35,10 @@ jobs:
           SHA=$(printf '%s' "$MSG" | grep -oE 'simc-sha=[a-f0-9]+' | head -1 | cut -d= -f2 || true)
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Tag patch bump
+      - name: Tag patch bump and dispatch release
         if: steps.upstream.outputs.sha != steps.pinned.outputs.sha
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           STRIPPED="${{ steps.pinned.outputs.tag }}"
           STRIPPED="${STRIPPED#v}"
@@ -47,3 +50,4 @@ jobs:
             -m "Auto release: simc ${{ env.SIMC_BRANCH }}@${{ steps.upstream.outputs.sha }}" \
             -m "simc-sha=${{ steps.upstream.outputs.sha }}"
           git push origin "$NEW"
+          gh workflow run release.yml --ref "$NEW"
