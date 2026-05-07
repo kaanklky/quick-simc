@@ -85,3 +85,14 @@ jobs:
             NOTES=$(printf 'Automated release.\n\nsimc-sha: %s\n' "$SIMC_SHA")
             gh release create "$TAG" --title "$TAG" --notes "$NOTES"
           fi
+
+      - name: Trigger remote redeploy
+        if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v') && env.DEPLOY_WEBHOOK != ''
+        env:
+          DEPLOY_WEBHOOK: ${{ secrets.DEPLOY_WEBHOOK }}
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          curl -fsSL -X POST \
+            -H "X-API-Key: $DEPLOY_TOKEN" \
+            "$DEPLOY_WEBHOOK" \
+            -o /dev/null
