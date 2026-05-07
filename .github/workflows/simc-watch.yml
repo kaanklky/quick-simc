@@ -43,6 +43,7 @@ jobs:
           NEW="v${MAJ}.${MIN}.$((PATCH+1))"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "$NEW" -m "Auto release: simc ${{ env.SIMC_BRANCH }}@${{ steps.upstream.outputs.sha }}
-simc-sha=${{ steps.upstream.outputs.sha }}"
+          git tag -a "$NEW" \
+            -m "Auto release: simc ${{ env.SIMC_BRANCH }}@${{ steps.upstream.outputs.sha }}" \
+            -m "simc-sha=${{ steps.upstream.outputs.sha }}"
           git push origin "$NEW"
