@@ -1,6 +1,6 @@
-const EXAMPLE_PROFILE = `# Sozinn - Marksmanship - 2026-05-23 23:09 - EU/Twisting Nether
+const EXAMPLE_PROFILE = `# Sozinn - Marksmanship - 2026-06-12 00:36 - EU/Twisting Nether
 # SimC Addon 12.0.5-04
-# WoW 12.0.5.67602, TOC 120005
+# WoW 12.0.5.67823, TOC 120005
 # Requires SimulationCraft 1000-01 or newer
 
 hunter="Sozinn"
@@ -9,7 +9,7 @@ race=blood_elf
 region=eu
 server=twisting_nether
 role=attack
-professions=mining=57/jewelcrafting=1
+professions=herbalism=92/mining=100
 spec=marksmanship
 # loot_spec=marksmanship
 
@@ -24,61 +24,61 @@ talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAmgZYLwsAAAAAAAAAMjZMDzYmZMDGTzYmZstxYmlZm
 # Saved Loadout: iv-AoE-DR-12.0.5-02
 # talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAGwMsAMLAAAAAAAAAzYmZGbGzMjZYZMmxgZZzMzwMzYmZWYmlhZGAAgZMmZmZADgBYjZGD
 
-# Primal Sentry's Maw (263)
-head=,id=249988,bonus_id=13338/13439/6652/12667/13575/12790
-# Ribbon of Coiled Malice (266)
-neck=,id=249337,bonus_id=42/13668/13334/12795
+# Primal Sentry's Maw (289)
+head=,id=249988,bonus_id=6652/12667/13440/13338/13575/12806
+# Masterwork Sin'dorei Amulet (285)
+neck=,id=240950,bonus_id=12214/13667/12497/12066/8791/13622,crafted_stats=32/49,crafting_quality=5
 # Spaulders of Arrow's Flight (289)
-shoulder=,id=251097,bonus_id=13440/43/13577/12699/12806
-# Defiant Defender's Drape (276)
-back=,id=260312,bonus_id=13440/6652/13577/12699/12798
-# Primal Sentry's Scaleplate (276)
-chest=,id=249991,bonus_id=6652/13336/13575/12798
+shoulder=,id=251097,enchant_id=8001,bonus_id=13440/43/13577/12699/12806
+# Cloak of the Fallen Cardinal (289)
+back=,id=49823,bonus_id=13440/6652/13577/12699/12806
+# Primal Sentry's Scaleplate (289)
+chest=,id=249991,enchant_id=7987,bonus_id=6652/13335/13336/13575/12806
 # Tabard of Summer Flames (1)
 tabard=,id=35280
-# Corewarden Cuffs (269)
-wrist=,id=251209,bonus_id=13440/43/12667/13577/12699/12796
-# Primal Sentry's Talonguards (276)
-hands=,id=249989,bonus_id=6652/13440/13337/13574/12798
+# Farstrider's Plated Bracers (285)
+wrist=,id=244584,bonus_id=12214/13667/12497/12066/8791/13622/12667,crafted_stats=40/36,crafting_quality=5
+# Primal Sentry's Talonguards (289)
+hands=,id=249989,enchant_id=2841,bonus_id=6652/13440/13337/13574/12806
 # World Tender's Barkclasp (285)
 waist=,id=244611,bonus_id=12214/13667/8960/12497/12066/12667/13622,crafting_quality=5
-# Primal Sentry's Legguards (282)
-legs=,id=249987,enchant_id=8159,bonus_id=6652/13440/13339/13575/12804
+# Primal Sentry's Legguards (289)
+legs=,id=249987,enchant_id=8159,bonus_id=6652/13440/13339/13575/12806
 # World Tender's Rootslippers (285)
 feet=,id=244610,enchant_id=7993,bonus_id=12214/13667/8960/12497/12066/13622,crafting_quality=5
-# Omission of Light (266)
-finger1=,id=251093,bonus_id=12795/13440/6652/13668/12699
-# Platinum Star Band (266)
-finger2=,id=193708,bonus_id=12795/13440/6652/13668/12699
-# Algeth'ar Puzzle Box (272)
-trinket1=,id=193701,bonus_id=12801/13440/6652/12699
-# Glorious Crusader's Keepsake (266)
-trinket2=,id=251792,bonus_id=6652/12795
-# Stormshaper's Crossbow (276)
-main_hand=,id=258412,enchant_id=8039,bonus_id=13440/6652/12701/12798
+# Occlusion of Void (276)
+finger1=,id=251217,bonus_id=13440/6652/13668/12699/12798
+# Platinum Star Band (276)
+finger2=,id=193708,bonus_id=13440/6652/13668/12699/12798
+# Algeth'ar Puzzle Box (298)
+trinket1=,id=193701,bonus_id=13440/6652/12699/13654
+# Emberwing Feather (289)
+trinket2=,id=250144,bonus_id=13440/6652/12699/12806
+# Aln'hara Sprigshot (295)
+main_hand=,id=265337,bonus_id=12214/13655/12497/12066/8791/13622,crafted_stats=36/32,crafting_quality=5
 
 ### Gear from Bags
 #
-# Primal Sentry's Trophies (279)
-# shoulder=,id=249986,enchant_id=8001,bonus_id=13340/13440/6652/13574/12803
+# Sharpeye Gleam (266)
+# head=,id=258585,bonus_id=12795/13440/6652/12667/13577/12699
 #
-# Amberfrond Bracers (266)
-# wrist=,id=251079,bonus_id=12795/13440/6652/12667/13577/12699
+# Pauldrons of the Void Hunter (266)
+# shoulder=,id=151323,bonus_id=12795/13440/6652/13577/12699
 #
-# Void-Reaper's Libram (259)
-# trinket1=,id=251785,bonus_id=12793/6652
+# Heart of Wind (266)
+# trinket1=,id=250256,bonus_id=12795/13440/6652/12699
 
 ### Additional Character Info
 #
 # catalyst_currencies=3269:8/3378:8/2813:8/3116:8
 #
-# upgrade_currencies=c:3347:17/c:3383:134/c:3341:56/c:3343:22/c:3345:16/i:228338:1/i:230906:7/i:228339:1/i:224072:1/i:231756:7/i:232875:5/i:229390:9/i:230936:1/i:231769:1/i:211296:11
+# upgrade_currencies=c:3347:17/c:3383:27/c:3341:6/c:3343:29/c:3345:6/i:228338:1/i:230906:7/i:228339:1/i:224072:1/i:268552:8/i:231756:7/i:232875:3/i:229390:9/i:230936:1/i:231769:1/i:211296:11
 #
-# slot_high_watermarks=0:263:263/1:266:266/2:289:289/3:276:276/4:285:285/5:282:282/6:285:285/7:269:269/8:276:276/9:266:266/10:266:266/11:276:276/12:276:276/13:0:0/14:0:0/15:0:0/16:0:0
+# slot_high_watermarks=0:289:289/1:285:285/2:289:289/3:289:289/4:285:285/5:289:289/6:285:285/7:285:285/8:289:289/9:276:276/10:289:289/11:289:289/12:295:295/13:0:67/14:0:67/15:0:67/16:0:67
 #
-# upgrade_achievements=40107/40942/40943/40944/41886/41887/41888/41892/42767/42768/61809
+# upgrade_achievements=40107/40942/40943/40944/41886/41887/41888/41892/42767/42768/42769/61809/42770
 
-# Checksum: 5f7c0f5`;
+# Checksum: 8d84ff41`;
 
 const STORAGE_KEY = "quick-simc-config";
 
