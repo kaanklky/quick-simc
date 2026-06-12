@@ -97,6 +97,17 @@ else
   echo "Warning: gzip not installed, skipping .wasm.gz" >&2
 fi
 
+WASM_HASH="$(sha256sum "$OUT_DIR/simc.wasm" | head -c 12)"
+HASH_DIR="$OUT_DIR/$WASM_HASH"
+echo "Moving WASM bundle into $HASH_DIR..."
+find "$OUT_DIR" -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} +
+mkdir -p "$HASH_DIR"
+mv "$OUT_DIR/simc.js" "$HASH_DIR/simc.js"
+mv "$OUT_DIR/simc.wasm" "$HASH_DIR/simc.wasm"
+[ -f "$OUT_DIR/simc.wasm.br" ] && mv "$OUT_DIR/simc.wasm.br" "$HASH_DIR/simc.wasm.br"
+[ -f "$OUT_DIR/simc.wasm.gz" ] && mv "$OUT_DIR/simc.wasm.gz" "$HASH_DIR/simc.wasm.gz"
+[ -f "$OUT_DIR/simc.worker.js" ] && mv "$OUT_DIR/simc.worker.js" "$HASH_DIR/simc.worker.js"
+
 fi  # INJECT_ONLY guard
 
 if [ "$NO_INJECT" != "1" ]; then
@@ -108,15 +119,33 @@ if [ "$NO_INJECT" != "1" ]; then
   APP_VERSION="${APP_VERSION:-$(git -C "$ROOT_DIR" describe --tags --always 2>/dev/null || echo dev)}"
   SUBTITLE="SimulationCraft ${SIMC_VERSION} / ${PATCH_NAME} ${WOW_VERSION}"
 
+  WASM_BUNDLE="${WASM_HASH:-}"
+  if [ -z "$WASM_BUNDLE" ] && [ -d "$OUT_DIR" ]; then
+    WASM_BUNDLE="$(find "$OUT_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | grep -E '^[a-f0-9]+$' | head -n 1 || true)"
+  fi
+
   INDEX_HTML="$PUBLIC_DIR/index.html"
   SW_JS="$PUBLIC_DIR/service-worker.js"
+  SIM_WORKER_JS="$PUBLIC_DIR/assets/js/sim-worker.js"
   if [ -f "$INDEX_HTML" ]; then
     echo "Injecting subtitle into $INDEX_HTML: $SUBTITLE"
     sed -i -E "s|(<span class=\"subtitle\">)[^<]*(</span>)|\1${SUBTITLE}\2|" "$INDEX_HTML"
+    if [ -n "$WASM_BUNDLE" ]; then
+      echo "Injecting WASM_BUNDLE into $INDEX_HTML preload: $WASM_BUNDLE"
+      sed -i -E "s|(href=\"/assets/wasm/)[^/\"]+(/simc\.wasm\")|\1${WASM_BUNDLE}\2|g" "$INDEX_HTML"
+    fi
   fi
   if [ -f "$SW_JS" ]; then
     echo "Injecting CACHE_VERSION into $SW_JS: $APP_VERSION"
     sed -i -E "s|^(const CACHE_VERSION = )\"[^\"]*\";|\1\"${APP_VERSION}\";|" "$SW_JS"
+    if [ -n "$WASM_BUNDLE" ]; then
+      echo "Injecting WASM_BUNDLE into $SW_JS: $WASM_BUNDLE"
+      sed -i -E "s|^(const WASM_BUNDLE = )\"[^\"]*\";|\1\"${WASM_BUNDLE}\";|" "$SW_JS"
+    fi
+  fi
+  if [ -f "$SIM_WORKER_JS" ] && [ -n "$WASM_BUNDLE" ]; then
+    echo "Injecting WASM_BUNDLE into $SIM_WORKER_JS: $WASM_BUNDLE"
+    sed -i -E "s|^(const WASM_BUNDLE = )\"[^\"]*\";|\1\"${WASM_BUNDLE}\";|" "$SIM_WORKER_JS"
   fi
 fi
 

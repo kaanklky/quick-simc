@@ -1,5 +1,7 @@
+const WASM_BUNDLE = "dev";
+
 try {
-  importScripts("/assets/wasm/simc.js");
+  importScripts(`/assets/wasm/${WASM_BUNDLE}/simc.js`);
 } catch (err) {
   self.postMessage({
     type: "error",
@@ -123,8 +125,8 @@ const modulePromise = createSimcModule({
   noInitialRun: true,
   print: onStdout,
   printErr: onStdout,
-  locateFile: (p) => `/assets/wasm/${p}`,
-  mainScriptUrlOrBlob: "/assets/wasm/simc.js",
+  locateFile: (p) => `/assets/wasm/${WASM_BUNDLE}/${p}`,
+  mainScriptUrlOrBlob: `/assets/wasm/${WASM_BUNDLE}/simc.js`,
 }).then((m) => {
   self.postMessage({ type: "ready" });
   return m;

@@ -1,6 +1,7 @@
 const CACHE_VERSION = "dev";
+const WASM_BUNDLE = "dev";
 const SHELL_CACHE = `quick-simc-shell-${CACHE_VERSION}`;
-const WASM_CACHE = `quick-simc-wasm-${CACHE_VERSION}`;
+const WASM_CACHE = `quick-simc-wasm-${WASM_BUNDLE}`;
 
 const SHELL_ASSETS = [
   "/index.html",
@@ -10,8 +11,8 @@ const SHELL_ASSETS = [
 ];
 
 const WASM_ASSETS = [
-  "/assets/wasm/simc.js",
-  "/assets/wasm/simc.wasm",
+  `/assets/wasm/${WASM_BUNDLE}/simc.js`,
+  `/assets/wasm/${WASM_BUNDLE}/simc.wasm`,
 ];
 
 self.addEventListener("install", (event) => {
