@@ -19,13 +19,21 @@ docker build -t quick-simc .
 docker run -p 3000:3000 quick-simc
 ```
 
-`build-wasm.sh` installs emsdk into `~/.emsdk` if missing, clones simc, builds it to WebAssembly with `emcmake`, and copies the artifacts into `src/public/assets/wasm/`. Set `SIMC_BRANCH` and `WOW_PATCH_NAME` to build a different expansion:
+`build-wasm.sh` installs emsdk into `~/.emsdk` if missing, clones simc, builds it to WebAssembly with `emcmake`, and copies the artifacts into a content-addressed subdirectory `src/public/assets/wasm/<HASH>/` (where `<HASH>` is the first 12 hex chars of `sha256(simc.wasm)`). Old hash directories under `src/public/assets/wasm/` are deleted on each build. Set `SIMC_BRANCH` and `WOW_PATCH_NAME` to build a different expansion:
 
 ```bash
 SIMC_BRANCH=thewarwithin WOW_PATCH_NAME="The War Within" ./build-wasm.sh
 ```
 
-After the WASM build, `build-wasm.sh` also rewrites the subtitle in `src/public/index.html` (using the simc version from `engine/config.hpp` and the WoW patch version from `engine/dbc/generated/client_data_version.inc`) and the `CACHE_VERSION` constant in `src/public/service-worker.js` (derived from `git describe --tags --always`, override with `APP_VERSION=...`). These two files are mutated **in place** — do not commit their injected values back. Use `NO_INJECT=1 ./build-wasm.sh` to skip the rewrite step.
+After the WASM build, `build-wasm.sh` also rewrites several files **in place** so the frontend points at the new bundle:
+
+- `src/public/index.html`: the subtitle span (simc version from `engine/config.hpp` and WoW patch version from `engine/dbc/generated/client_data_version.inc`) and the `<link rel="preload">` href for `simc.wasm`.
+- `src/public/service-worker.js`: the `CACHE_VERSION` constant (derived from `git describe --tags --always`, override with `APP_VERSION=...`) and the `WASM_BUNDLE` constant.
+- `src/public/assets/js/sim-worker.js`: the `WASM_BUNDLE` constant (used in `importScripts`, `locateFile`, and `mainScriptUrlOrBlob`).
+
+Do not commit the injected values back — the placeholders should stay as `"dev"`. Use `NO_INJECT=1 ./build-wasm.sh` to skip the rewrite step. Use `INJECT_ONLY=1 ./build-wasm.sh` to only run the rewrite step against an existing `src/public/assets/wasm/<HASH>/` (this is what the Dockerfile uses after copying `src/public/` over the wasm-builder stage's output).
+
+The content-addressed path means CDN/proxy caches (Cloudflare, etc.) can hold every historical bundle forever without ever serving a mismatched `simc.js` + `simc.wasm` pair — each release publishes a new path, the hashed bundle is served with `Cache-Control: public, max-age=31536000, immutable`, and the entrypoint files (`index.html`, `service-worker.js`, `/assets/js/`, `/assets/css/`) are served `Cache-Control: no-cache` so a deploy is picked up on the next request.
 
 The first WASM build takes 15-40 minutes. The resulting `simc.wasm` is ~100 MB uncompressed; `build-wasm.sh` also emits `simc.wasm.br` (~7 MB) and `simc.wasm.gz` (~18 MB) which nginx picks based on `Accept-Encoding`. Install `brotli` locally (Debian/Ubuntu: `apt install brotli`) before running the build if you want the smaller variant. Everything is cached in the browser on first visit via Service Worker.
 
