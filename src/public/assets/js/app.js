@@ -488,9 +488,18 @@ if (!self.crossOriginIsolated) {
 }
 
 if ("serviceWorker" in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
   navigator.serviceWorker.register("/service-worker.js").catch((err) => {
     console.warn("Service worker registration failed:", err);
   });
+  if (hadController) {
+    let reloading = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloading) return;
+      reloading = true;
+      location.reload();
+    });
+  }
 }
 
 loadConfig();
