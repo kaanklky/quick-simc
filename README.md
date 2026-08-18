@@ -31,6 +31,12 @@ After the WASM build, `build-wasm.sh` also rewrites several files **in place** s
 - `src/public/service-worker.js`: the `CACHE_VERSION` constant (derived from `git describe --tags --always`, override with `APP_VERSION=...`) and the `WASM_BUNDLE` constant.
 - `src/public/assets/js/sim-worker.js`: the `WASM_BUNDLE` constant (used in `importScripts`, `locateFile`, and `mainScriptUrlOrBlob`).
 
+### sim-worker.js doubles as the pthread worker script
+
+Emscripten starts the pthread pool with `new Worker(_scriptName, { name: "em-pthread" })`, and inside a worker `_scriptName` is `self.location.href`. That is the URL of `sim-worker.js`, not of `simc.js`, because `simc.js` is pulled in with `importScripts`. Emscripten used to let the caller redirect that with `Module.mainScriptUrlOrBlob`; current releases ignore the option, so every pool thread re-executes `sim-worker.js` itself.
+
+`sim-worker.js` therefore checks `self.name === "em-pthread"`. In a pool thread it does nothing beyond loading `simc.js`, which self-starts as a pthread and installs its own `onmessage` handler. Without that guard the worker's own top-level code overwrites emscripten's handler, the pool handshake never completes, and module startup hangs forever with no error surfaced. Keep every new top-level side effect inside the `if (!IS_PTHREAD)` block.
+
 Do not commit the injected values back — the placeholders should stay as `"dev"`. Use `NO_INJECT=1 ./build-wasm.sh` to skip the rewrite step. Use `INJECT_ONLY=1 ./build-wasm.sh` to only run the rewrite step against an existing `src/public/assets/wasm/<HASH>/` (this is what the Dockerfile uses after copying `src/public/` over the wasm-builder stage's output).
 
 The content-addressed path means CDN/proxy caches (Cloudflare, etc.) can hold every historical bundle forever without ever serving a mismatched `simc.js` + `simc.wasm` pair — each release publishes a new path, the hashed bundle is served with `Cache-Control: public, max-age=31536000, immutable`, and the entrypoint files (`index.html`, `service-worker.js`, `/assets/js/`, `/assets/css/`) are served `Cache-Control: no-cache` so a deploy is picked up on the next request.

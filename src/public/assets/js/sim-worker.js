@@ -1,12 +1,29 @@
 const WASM_BUNDLE = "dev";
+const IS_PTHREAD = self.name === "em-pthread";
+
+let fatalReported = false;
+
+function reportFatal(message) {
+  if (IS_PTHREAD || fatalReported) return;
+  fatalReported = true;
+  self.postMessage({ type: "error", message });
+}
+
+self.addEventListener("unhandledrejection", (event) => {
+  const reason = event.reason;
+  reportFatal(
+    `simc failed to start: ${reason && reason.message ? reason.message : String(reason)}`
+  );
+});
+
+self.addEventListener("error", (event) => {
+  reportFatal(`simc failed to start: ${event.message || "worker error"}`);
+});
 
 try {
   importScripts(`/assets/wasm/${WASM_BUNDLE}/simc.js`);
 } catch (err) {
-  self.postMessage({
-    type: "error",
-    message: `Failed to load simc.js: ${err && err.message ? err.message : String(err)}`,
-  });
+  reportFatal(`Failed to load simc.js: ${err && err.message ? err.message : String(err)}`);
   throw err;
 }
 
@@ -119,79 +136,78 @@ function formatErr(err) {
   return String(err);
 }
 
-self.postMessage({ type: "loading" });
+if (!IS_PTHREAD) {
+  self.postMessage({ type: "loading" });
 
-const modulePromise = createSimcModule({
-  noInitialRun: true,
-  print: onStdout,
-  printErr: onStdout,
-  locateFile: (p) => `/assets/wasm/${WASM_BUNDLE}/${p}`,
-  mainScriptUrlOrBlob: `/assets/wasm/${WASM_BUNDLE}/simc.js`,
-}).then((m) => {
-  self.postMessage({ type: "ready" });
-  return m;
-}).catch((err) => {
-  self.postMessage({
-    type: "error",
-    message: `Failed to initialize simc: ${err && err.message ? err.message : String(err)}`,
+  const modulePromise = createSimcModule({
+    noInitialRun: true,
+    print: onStdout,
+    printErr: onStdout,
+    locateFile: (p) => `/assets/wasm/${WASM_BUNDLE}/${p}`,
+    mainScriptUrlOrBlob: `/assets/wasm/${WASM_BUNDLE}/simc.js`,
+  }).then((m) => {
+    self.postMessage({ type: "ready" });
+    return m;
+  }).catch((err) => {
+    reportFatal(`Failed to initialize simc: ${err && err.message ? err.message : String(err)}`);
+    throw err;
   });
-  throw err;
-});
 
-self.onmessage = async (e) => {
-  const msg = e.data;
-  if (!msg || msg.type !== "simulate") return;
+  self.onmessage = async (e) => {
+    const msg = e.data;
+    if (!msg || msg.type !== "simulate") return;
 
-  const sanitized = sanitizeConfig(msg.config || "");
-  if (sanitized.error) {
-    self.postMessage({ type: "error", message: sanitized.error });
-    return;
-  }
+    const sanitized = sanitizeConfig(msg.config || "");
+    if (sanitized.error) {
+      self.postMessage({ type: "error", message: sanitized.error });
+      return;
+    }
 
-  let m;
-  try {
-    m = await modulePromise;
-  } catch {
-    return;
-  }
+    let m;
+    try {
+      m = await modulePromise;
+    } catch {
+      return;
+    }
 
-  const threads =
-    (self.navigator && self.navigator.hardwareConcurrency) || 4;
+    const threads =
+      (self.navigator && self.navigator.hardwareConcurrency) || 4;
 
-  try { m.FS.mkdir("/work"); } catch {}
-  try { m.FS.unlink("/work/out.json"); } catch {}
-  m.FS.writeFile("/work/input.simc", sanitized.config);
+    try { m.FS.mkdir("/work"); } catch {}
+    try { m.FS.unlink("/work/out.json"); } catch {}
+    m.FS.writeFile("/work/input.simc", sanitized.config);
 
-  self.postMessage({ type: "started", threads });
+    self.postMessage({ type: "started", threads });
 
-  const args = [
-    "/work/input.simc",
-    "json=/work/out.json",
-    `threads=${threads}`,
-    "progressbar_type=1",
-  ];
-  if (msg.fightStyle) {
-    args.push(`fight_style=${msg.fightStyle}`);
-  }
+    const args = [
+      "/work/input.simc",
+      "json=/work/out.json",
+      `threads=${threads}`,
+      "progressbar_type=1",
+    ];
+    if (msg.fightStyle) {
+      args.push(`fight_style=${msg.fightStyle}`);
+    }
 
-  simcErrors.length = 0;
+    simcErrors.length = 0;
 
-  try {
-    m.callMain(args);
-  } catch (err) {
-    const prefix = simcErrors.length ? simcErrors.join("\n") : `simc exited: ${formatErr(err)}`;
-    self.postMessage({ type: "error", message: prefix });
-    return;
-  }
+    try {
+      m.callMain(args);
+    } catch (err) {
+      const prefix = simcErrors.length ? simcErrors.join("\n") : `simc exited: ${formatErr(err)}`;
+      self.postMessage({ type: "error", message: prefix });
+      return;
+    }
 
-  try {
-    const jsonText = m.FS.readFile("/work/out.json", { encoding: "utf8" });
-    const data = extractResult(JSON.parse(jsonText));
-    self.postMessage({ type: "result", data });
-  } catch (err) {
-    const detail = simcErrors.length
-      ? simcErrors.join("\n")
-      : `Failed to parse results: ${formatErr(err)}`;
-    self.postMessage({ type: "error", message: detail });
-  }
-};
+    try {
+      const jsonText = m.FS.readFile("/work/out.json", { encoding: "utf8" });
+      const data = extractResult(JSON.parse(jsonText));
+      self.postMessage({ type: "result", data });
+    } catch (err) {
+      const detail = simcErrors.length
+        ? simcErrors.join("\n")
+        : `Failed to parse results: ${formatErr(err)}`;
+      self.postMessage({ type: "error", message: detail });
+    }
+  };
+}
