@@ -432,6 +432,15 @@ function showResult(data) {
   }
 }
 
+function showFatal(message) {
+  els.progressSection.classList.add("hidden");
+  els.resultSection.classList.add("hidden");
+  els.errorSection.classList.remove("hidden");
+  els.errorMessage.textContent = message;
+  els.btnSimulate.disabled = true;
+  els.btnSimulate.textContent = "Unavailable";
+}
+
 function startSimulation() {
   const config = els.input.value.trim();
   if (!config) return;
@@ -481,12 +490,6 @@ els.btnToggleLog.addEventListener("click", () => {
   els.btnToggleLog.textContent = els.logOutput.classList.contains("hidden") ? "Show" : "Hide";
 });
 
-if (!self.crossOriginIsolated) {
-  console.warn(
-    "crossOriginIsolated is false. Simulation will not start because SharedArrayBuffer is unavailable. Check that the server sends Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy headers."
-  );
-}
-
 if ("serviceWorker" in navigator) {
   const hadController = !!navigator.serviceWorker.controller;
   navigator.serviceWorker.register("/service-worker.js").catch((err) => {
@@ -504,4 +507,14 @@ if ("serviceWorker" in navigator) {
 
 loadConfig();
 loadFightStyles();
-spawnWorker();
+
+if (self.crossOriginIsolated) {
+  spawnWorker();
+} else {
+  showFatal(
+    "This page is not cross-origin isolated, so SharedArrayBuffer is unavailable and simc cannot start.\n\n" +
+      "Serve the site over HTTPS (or http://localhost) and make sure these response headers reach the browser:\n" +
+      "  Cross-Origin-Opener-Policy: same-origin\n" +
+      "  Cross-Origin-Embedder-Policy: require-corp"
+  );
+}

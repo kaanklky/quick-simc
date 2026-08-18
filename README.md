@@ -83,6 +83,7 @@ docker build --build-arg SIMC_BRANCH=thewarwithin --build-arg WOW_PATCH_NAME="Th
 ## Browser requirements
 
 - SharedArrayBuffer support (Chrome 68+, Firefox 79+, Safari 15.2+). Nginx sends COOP/COEP headers to enable `crossOriginIsolated`.
+- A secure context: HTTPS, or `http://localhost`. Over plain HTTP on any other origin (a LAN IP, a bare hostname) browsers withhold SharedArrayBuffer whatever COOP/COEP say, and the page reports that it cannot start instead of loading.
 - Enough RAM for the sim (typically 256 MB-1 GB depending on iterations).
 
 ## Screenshots
