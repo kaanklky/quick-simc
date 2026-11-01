@@ -1,6 +1,6 @@
-const EXAMPLE_PROFILE = `# Sozinn - Marksmanship - 2026-06-12 00:36 - EU/Twisting Nether
-# SimC Addon 12.0.5-04
-# WoW 12.0.5.67823, TOC 120005
+const EXAMPLE_PROFILE = `# Sozinn - Marksmanship - 2026-11-01 21:09 - EU/Twisting Nether
+# SimC Addon 12.1.5-03
+# WoW 12.1.5.70688, TOC 120105
 # Requires SimulationCraft 1000-01 or newer
 
 hunter="Sozinn"
@@ -13,72 +13,73 @@ professions=herbalism=92/mining=100
 spec=marksmanship
 # loot_spec=marksmanship
 
-talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAmgZYLwsAAAAAAAAAMjZMDzYmZMDGTzYmZstxYmlZmZmZmlhZZwAAAMmZmZmZGAYWMAbMDA
+talents=C4PAD57yiELKEty14ekTDtZEqwCMwMGNWGQmBbAAAAAAAAgZMjZW2mxMzYG8Ammxgx22MzMzMzMzgZWGMDAAYMzMmBYGbMMAbMz2MG
 
-# Saved Loadout: iv-Single-DR-12.0.5-01
-# talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAGwMsBMLAAAAAAAAAzYGzwMmZGzgxYGzMjtNGzsMzMzMzsMmZZwAAAMmZmZmZGA2gBYjZA
-# Saved Loadout: iv-Single-DR-12.0.5-02
-# talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAGwMsBMLAAAAAAAAAzYGzwMmZGzgxYGzMjtNGzsMzMzMzsMMLDGAAgxMzMzMzAAziBYjZA
-# Saved Loadout: iv-AoE-DR-12.0.5-01
-# talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAGwMsBMLAAAAAAAAAzYmZGbGzMjZYZMmxgZZjZmZZmZmZmZhZWGmZAAAmxYmZmBMAGgNmB
-# Saved Loadout: iv-AoE-DR-12.0.5-02
-# talents=C4PApei1JmYNvFfEFaN5bWuGKYzsMwAGwMsAMLAAAAAAAAAzYmZGbGzMjZYZMmxgZZzMzwMzYmZWYmlhZGAAgZMmZmZADgBYjZGD
+# Saved Loadout: iv-AoE-Sentinel-12.1-01
+# talents=C4PAD57yiELKEty14ekTDtZEqwGMwMGGLDgZwGAAAAAAAAYGzMzwMmZGzwyYMj5BYW22mZmZmZmZGYWGmBAAYegxMDAzYDMAbMz2MG
+# Saved Loadout: iv-Single-Sentinel-12.1-01
+# talents=C4PAD57yiELKEty14ekTDtZEqwCMwMGGLDgZwGAAAAAAAAYGzYmltZMzMmBPgxMGM22mZmZmZmZGMzygZAAAjZmxMAzYjhBYjZ2mxA
+# Saved Loadout: achirun
+# talents=C4PAD57yiELKEty14ekTDtZEqwCMwMGGLDgZwGAAAAAAAAYGzYmltZMzMmBPgxMGMLbbmZGzMzMzCjlBzAAAGzMjZAmxGDDwGzsNzMA
 
-# Primal Sentry's Maw (289)
-head=,id=249988,bonus_id=6652/12667/13440/13338/13575/12806
-# Masterwork Sin'dorei Amulet (285)
-neck=,id=240950,bonus_id=12214/13667/12497/12066/8791/13622,crafted_stats=32/49,crafting_quality=5
-# Spaulders of Arrow's Flight (289)
-shoulder=,id=251097,enchant_id=8001,bonus_id=13440/43/13577/12699/12806
-# Cloak of the Fallen Cardinal (289)
-back=,id=49823,bonus_id=13440/6652/13577/12699/12806
-# Primal Sentry's Scaleplate (289)
-chest=,id=249991,enchant_id=7987,bonus_id=6652/13335/13336/13575/12806
+omnium_talents=136814:1/136815:1/136817:1/136816:1/136822:1
+
+# Skulking Viper's Weeping Fangs (334)
+head=,id=271492,enchant_id=7961,bonus_id=13334/6652/13696/13692/13698/12854,redirected_base_stats=268230
+# Masterwork Sin'dorei Amulet (331)
+neck=,id=240950,gem_id=240898,bonus_id=12214/13667/12497/13751/14001/8791/13836,content_tuning=3615,crafted_stats=32/49,crafting_quality=5
+# Soulslither Spaulders (321)
+shoulder=,id=268231,enchant_id=8031,bonus_id=6652/13662/13334/12846
+# Amani Summoning Shawl (334)
+back=,id=268248,bonus_id=6652/13662/13334/12854
+# Skulking Viper's Scuteplate (334)
+chest=,id=271495,enchant_id=7987,bonus_id=13690/13440/6652/13698/12854
+# Bold Yellow Shirt (1)
+shirt=,id=167081,content_tuning=844
 # Tabard of Summer Flames (1)
-tabard=,id=35280
-# Farstrider's Plated Bracers (285)
-wrist=,id=244584,bonus_id=12214/13667/12497/12066/8791/13622/12667,crafted_stats=40/36,crafting_quality=5
-# Primal Sentry's Talonguards (289)
-hands=,id=249989,enchant_id=2841,bonus_id=6652/13440/13337/13574/12806
-# World Tender's Barkclasp (285)
-waist=,id=244611,bonus_id=12214/13667/8960/12497/12066/12667/13622,crafting_quality=5
-# Primal Sentry's Legguards (289)
-legs=,id=249987,enchant_id=8159,bonus_id=6652/13440/13339/13575/12806
-# World Tender's Rootslippers (285)
-feet=,id=244610,enchant_id=7993,bonus_id=12214/13667/8960/12497/12066/13622,crafting_quality=5
-# Occlusion of Void (276)
-finger1=,id=251217,bonus_id=13440/6652/13668/12699/12798
-# Platinum Star Band (276)
-finger2=,id=193708,bonus_id=13440/6652/13668/12699/12798
-# Algeth'ar Puzzle Box (298)
-trinket1=,id=193701,bonus_id=13440/6652/12699/13654
-# Emberwing Feather (289)
-trinket2=,id=250144,bonus_id=13440/6652/12699/12806
-# Aln'hara Sprigshot (295)
-main_hand=,id=265337,bonus_id=12214/13655/12497/12066/8791/13622,crafted_stats=36/32,crafting_quality=5
+tabard=,id=35280,content_tuning=394
+# Rising Tide Wristguards (321)
+wrist=,id=268217,bonus_id=6652/13696/13662/13333/12846
+# Skulking Viper's Hidepiercers (334)
+hands=,id=271493,bonus_id=13334/13691/6652/13697/12854
+# Cursed Reliquary Cincture (321)
+waist=,id=268216,bonus_id=6652/13696/13662/13334/12846
+# Skulking Viper's Coiled Legwraps (321)
+legs=,id=271491,enchant_id=8159,bonus_id=12846/6652/13440/13693/13698/1574,redirected_base_stats=251141
+# Boots of the Reckless Wayfarer (334)
+feet=,id=268258,enchant_id=7963,bonus_id=6652/13662/13334/12854
+# Signet of Snarling Servitude (321)
+finger1=,id=251136,enchant_id=7967,gem_id=240890,bonus_id=13440/42/13668/12699/12846,content_tuning=1279
+# Vile Alchemist's Band (321)
+finger2=,id=268249,enchant_id=7967,gem_id=240967,bonus_id=6652/13668/13334/12846
+# Lightspire Core (321)
+trinket1=,id=250214,bonus_id=13440/6652/12699/12846,content_tuning=1279
+# Vile Vial of Volatile Venom (318)
+trinket2=,id=273796,bonus_id=12849/13440/6652/12699
+# Caustic Repose Greatbow (321)
+main_hand=,id=268207,enchant_id=8689,bonus_id=6652/13334/13708/12846,content_tuning=7359
 
 ### Gear from Bags
 #
-# Sharpeye Gleam (266)
-# head=,id=258585,bonus_id=12795/13440/6652/12667/13577/12699
+# Saptorbane Guards (321)
+# wrist=,id=251200,bonus_id=13440/6652/13696/13662/12699/12846,content_tuning=1279
 #
-# Pauldrons of the Void Hunter (266)
-# shoulder=,id=151323,bonus_id=12795/13440/6652/13577/12699
-#
-# Heart of Wind (266)
-# trinket1=,id=250256,bonus_id=12795/13440/6652/12699
+# Sapling of the Dawnroot (311)
+# trinket1=,id=250259,bonus_id=12843/13440/6652/12699,content_tuning=1279
 
 ### Additional Character Info
 #
-# catalyst_currencies=3269:8/3378:8/2813:8/3116:8
+# catalyst_currencies=2813:8/3269:8/3116:8/3378:8/3465:8
 #
-# upgrade_currencies=c:3347:17/c:3383:27/c:3341:6/c:3343:29/c:3345:6/i:228338:1/i:230906:7/i:228339:1/i:224072:1/i:268552:8/i:231756:7/i:232875:3/i:229390:9/i:230936:1/i:231769:1/i:211296:11
+# upgrade_currencies=c:3445:246/c:3443:29/c:3444:22/i:228338:1/i:230906:7/i:228339:1/i:268552:12/i:224072:1/i:274476:11/i:231756:7/i:232875:4/i:229390:9/i:230936:1/i:231769:1/i:211296:11
 #
-# slot_high_watermarks=0:289:289/1:285:285/2:289:289/3:289:289/4:285:285/5:289:289/6:285:285/7:285:285/8:289:289/9:276:276/10:289:289/11:289:289/12:295:295/13:0:67/14:0:67/15:0:67/16:0:67
+# slot_high_watermarks=0:334:334/1:331:331/2:321:321/3:334:334/4:321:321/5:321:321/6:334:334/7:321:321/8:334:334/9:321:321/10:318:318/11:334:334/12:321:321/13:0:67/14:0:67/15:0:67/16:0:67
 #
-# upgrade_achievements=40107/40942/40943/40944/41886/41887/41888/41892/42767/42768/42769/61809/42770
+# upgrade_achievements=40107/40942/40943/40944/41886/41887/41888/41892/42767/42768/42769/42770/61809/62410/62411/62412
+#
+# bonus_roll_currencies=3418:0/3511:0
 
-# Checksum: 8d84ff41`;
+# Checksum: bec924ae`;
 
 const STORAGE_KEY = "quick-simc-config";
 
